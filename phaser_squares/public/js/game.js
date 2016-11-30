@@ -1,5 +1,5 @@
 //set width and height variables for game
-var width = 480;
+var width = 680;
 var height = 320;
 //create game object and initialize the canvas
 var game = new Phaser.Game(width, height, Phaser.AUTO, null, {preload: preload, create: create, update: update});
@@ -7,6 +7,7 @@ var game = new Phaser.Game(width, height, Phaser.AUTO, null, {preload: preload, 
 //initialize some variables
 var player;
 var food;
+var shark;
 var cursors;
 var speed = 175;
 var score = 0;
@@ -19,6 +20,7 @@ function preload() {
 	//load assets
 	game.load.image('player', 'assets/blue-square.png');
 	game.load.image('food', 'assets/red-square.png');
+  game.load.image('shark', 'assets/BabyShark-Small.png');
 }
 function create() {
 	//start arcade physics engine
@@ -49,6 +51,13 @@ function create() {
 	//enable physics for the food
 	game.physics.enable(food, Phaser.Physics.ARCADE);
 
+  //add shark sprite
+  shark = game.add.sprite(5, 5, 'shark');
+  shark.anchor.set(0.5);
+  game.physics.enable(shark, Phaser.Physics.ARCADE);
+  shark.body.collideWorldBounds = true;
+
+
 	//place score text on the screen
 	scoreText = game.add.text(5, 3, score);
 }
@@ -78,6 +87,7 @@ function update() {
 
 	//call eatFood function when the player and a piece of food overlap
 	game.physics.arcade.overlap(player, food, eatFood);
+  game.physics.arcade.overlap(player, shark, killPlayer)
 }
 
 //eatFood function
@@ -87,4 +97,12 @@ function eatFood(player, food) {
 	//update the score
 	score++;
 	scoreText.text = score;
+}
+
+function killPlayer () {
+  player.kill()
+  score = 0;
+
+  scoreText.text = score;
+  //game.restart();
 }
